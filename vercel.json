@@ -2,17 +2,17 @@
   "version": 2,
   "functions": {
     "server/index.js": {
-      "runtime": "@vercel/node"
+      "runtime": "@vercel/node@4.0.0"
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "server/index.js"
+      "source": "/api/(.*)",
+      "destination": "/server/index.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/app/$1"
+      "source": "/(.*)",
+      "destination": "/app/$1"
     }
   ]
 }
