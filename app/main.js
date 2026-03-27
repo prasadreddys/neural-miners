@@ -53,7 +53,9 @@ async function updateHUD() {
 
 // Enhanced assistant text with typing effect
 async function setAssistantText(text) {
-  if (window.animationSystem) {
+  if (!elements.assistantText) return;
+
+  if (window.animationSystem && typeof window.animationSystem.typeText === 'function') {
     await window.animationSystem.typeText(elements.assistantText, text, 30);
   } else {
     elements.assistantText.textContent = text;
@@ -61,6 +63,19 @@ async function setAssistantText(text) {
 }
 
 async function callAPI(path, body = null, method = 'GET') {
+  const options = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) options.body = JSON.stringify(body);
+
+  try {
+    const res = await fetch(`${API_BASE}${path}`, options);
+    if (!res.ok) throw new Error(`API ${path} failed: ${res.status}`);
+    return res.json();
+  } catch (err) {
+    console.error('API request failed:', err);
+    await setAssistantText('Network error, retrying soon...');
+    return null;
+  }
+}
   const options = { method, headers: { 'Content-Type': 'application/json' } };
   if (body) options.body = JSON.stringify(body);
   const res = await fetch(`${API_BASE}${path}`, options);
@@ -71,10 +86,12 @@ async function callAPI(path, body = null, method = 'GET') {
 async function loadAIMissions() {
   try {
     const res = await callAPI(`/ai/missions?walletAddress=${state.walletAddress || 'guest'}`);
-    state.missions = res.missions;
-    elements.missionList.innerHTML = state.missions
-      .map((m) => `<li><strong>${m.title}</strong> <small>(${m.difficulty})</small> • +${m.reward} energy <button onclick='acceptMission("${m.id}")'>Accept</button></li>`)
-      .join('');
+    state.missions = (res && res.missions) ? res.missions : [];
+    if (elements.missionList) {
+      elements.missionList.innerHTML = state.missions
+        .map((m) => `<li><strong>${m.title}</strong> <small>(${m.difficulty})</small> • +${m.reward} energy <button onclick='acceptMission("${m.id}")'>Accept</button></li>`)
+        .join('');
+    }
   } catch (e) {
     await setAssistantText('AI missions unavailable. Reconnecting...');
   }
@@ -125,25 +142,29 @@ async function claimOffline() {
 
 async function showTopLeaderboards() {
   const res = await callAPI('/leaderboard', null, 'GET');
+  if (!elements.leaderboard || !elements.leaderboardList || !res || !Array.isArray(res.leaderboard)) return;
   elements.leaderboard.hidden = false;
   elements.leaderboardList.innerHTML = res.leaderboard.map((entry, idx) => `<li>#${idx + 1} ${entry.player || entry.walletAddress} - ${entry.score || entry.tokens}</li>`).join('');
 }
 
 async function fetchMarketplace() {
   const res = await callAPI('/marketplace', null, 'GET');
+  if (!elements.marketplace || !elements.marketList) return;
+
+  const items = (res && Array.isArray(res.marketplace)) ? res.marketplace : [];
   elements.marketplace.hidden = false;
-  const items = res.marketplace || [];
   elements.marketList.innerHTML = items
     .map((o) => `<li>${o.assetType} #${o.tokenId} • ${o.price} tokens <button data-id="${o._id}" class="buy-btn">Buy</button></li>`)
     .join('');
+
   [...document.querySelectorAll('.buy-btn')].forEach((btn) => {
     btn.addEventListener('click', async () => {
       const orderId = btn.dataset.id;
       const result = await callAPI('/marketplace/buy', { buyer: state.walletAddress || 'guest', orderId }, 'POST');
-      if (result.success) {
+      if (result && result.success) {
         elements.assistantText.textContent = 'Purchase successful!';
-        loadAIMissions();
-        fetchMarketplace();
+        await loadAIMissions();
+        await fetchMarketplace();
       }
     });
   });
