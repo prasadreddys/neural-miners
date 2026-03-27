@@ -82,7 +82,8 @@ router.get('/achievements', async (req, res) => {
     const achievements = await fetchOnchainAchievements(walletAddress);
     res.json({ achievements });
   } catch (err) {
-    res.status(500).json({ error: 'unable to fetch achievements' });
+    console.error('achievement error', err?.message || err);
+    res.status(500).json({ error: 'unable to fetch achievements', detail: err?.message || 'unknown' });
   }
 });
 

@@ -31,7 +31,7 @@ bot.on('message', (ctx) => {
   }
 });
 
-(async () => {
+async function startBot() {
   try {
     await bot.launch();
     console.log('Telegram bot started');
@@ -39,7 +39,9 @@ bot.on('message', (ctx) => {
     console.error('Telegram bot failed to start', err);
     process.exit(1);
   }
-})();
+}
+
+startBot();
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

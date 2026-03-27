@@ -53,16 +53,17 @@ function updateHUD() {
   elements.status.textContent = state.connected ? `Connected ${state.walletAddress || ''}` : 'Disconnected';
 }
 
-async function callAPI(path, body, method = 'GET') {
+async function callAPI(path, body = null, method = 'GET') {
   const options = { method, headers: { 'Content-Type': 'application/json' } };
   if (body) options.body = JSON.stringify(body);
   const res = await fetch(`${API_BASE}${path}`, options);
+  if (!res.ok) throw new Error(`API ${path} failed: ${res.status}`);
   return res.json();
 }
 
 async function loadAIMissions() {
   try {
-    const res = await callAPI(`/ai/missions?walletAddress=${state.walletAddress || 'guest'}`, null, 'GET');
+    const res = await callAPI(`/ai/missions?walletAddress=${state.walletAddress || 'guest'}`);
     state.missions = res.missions;
     elements.missionList.innerHTML = state.missions
       .map((m) => `<li><strong>${m.title}</strong> <small>(${m.difficulty})</small> • +${m.reward} energy <button onclick='acceptMission("${m.id}")'>Accept</button></li>`)
