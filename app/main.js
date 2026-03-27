@@ -35,14 +35,9 @@ const elements = {
   leaderboardList: document.getElementById('leaderboard-list'),
   actionMessage: document.getElementById('assistant-text'),
   connectWallet: document.getElementById('connectBtn'),
-  sendReferral: document.getElementById('send-referral'),
-  openMarket: document.getElementById('open-market'),
-  refreshMarket: document.getElementById('refresh-market'),
-  marketList: document.getElementById('market-list'),
   tokenBalance: document.getElementById('balanceBtn'),
-  tokenTransfer: document.getElementById('transfer-token'),
-  stakeDeposit: document.getElementById('stake-deposit'),
-  stakeWithdraw: document.getElementById('stake-withdraw'),
+  marketplace: document.getElementById('marketplace'),
+  marketList: document.getElementById('market-list'),
   status: document.getElementById('connectionStatus'),
   transferAmount: null,
   recipientAddress: null
@@ -212,13 +207,6 @@ if (elements.missionButton) elements.missionButton.addEventListener('click', asy
   if (panel) panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
 });
 if (elements.connectWallet) elements.connectWallet.addEventListener('click', connectWallet);
-if (elements.sendReferral) elements.sendReferral.addEventListener('click', shareReferral);
-if (elements.openMarket) elements.openMarket.addEventListener('click', async () => {
-  await fetchMarketplace();
-  const panel = document.getElementById('marketplace');
-  if (panel) panel.style.display = 'block';
-});
-if (elements.refreshMarket) elements.refreshMarket.addEventListener('click', fetchMarketplace);
 
 if (elements.tokenBalance) {
   elements.tokenBalance.addEventListener('click', async () => {
@@ -230,46 +218,6 @@ if (elements.tokenBalance) {
     }
   });
 }
-
-elements.tokenTransfer.addEventListener('click', async () => {
-  const to = prompt('Recipient wallet address:');
-  const amount = prompt('Amount of NMT to send:');
-  if (!to || !amount || !state.walletAddress) return;
-
-  const res = await callAPI('/token/transfer', { walletAddress: state.walletAddress, to, amount: Number(amount) }, 'POST');
-  if (res.success) {
-    elements.assistantText.textContent = `Token transfer queued (tx ${res.txHash})`;
-    fetchMarketplace();
-  } else {
-    elements.assistantText.textContent = `Token transfer failed: ${res.error}`;
-  }
-});
-
-elements.stakeDeposit.addEventListener('click', async () => {
-  const amount = prompt('Amount of NMT to stake:');
-  if (!amount || !state.walletAddress) return;
-
-  const res = await callAPI('/stake/deposit', { walletAddress: state.walletAddress, amount: Number(amount) }, 'POST');
-  if (res.success) {
-    elements.assistantText.textContent = `Staked ${res.staked} NMT`; 
-    loadAIMissions();
-  } else {
-    elements.assistantText.textContent = `Stake deposit failed: ${res.error}`;
-  }
-});
-
-elements.stakeWithdraw.addEventListener('click', async () => {
-  const amount = prompt('Amount of NMT to withdraw from stake:');
-  if (!amount || !state.walletAddress) return;
-
-  const res = await callAPI('/stake/withdraw', { walletAddress: state.walletAddress, amount: Number(amount) }, 'POST');
-  if (res.success) {
-    elements.assistantText.textContent = `Unstaked ${res.withdrawn} NMT, reward ${res.reward} NMT`; 
-    loadAIMissions();
-  } else {
-    elements.assistantText.textContent = `Stake withdrawal failed: ${res.error}`;
-  }
-});
 
 setInterval(() => {
   state.energy = Math.max(0, state.energy - 0.04);

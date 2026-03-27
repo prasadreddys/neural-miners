@@ -44,11 +44,13 @@ io.on('connection', (socket) => {
 });
 
 connectDB().then(() => {
-  if (require.main === module) {
-    server.listen(PORT, () => {
-      console.log(`Neural Miners server running at http://localhost:${PORT}`);
-    });
-  }
+  console.log('✅ Database connected successfully');
+}).catch((err) => {
+  console.log('⚠️  Database connection failed, running in offline mode:', err.message);
+}).finally(() => {
+  server.listen(PORT, () => {
+    console.log(`🚀 Neural Miners server running at http://localhost:${PORT}`);
+  });
 });
 
 module.exports = app;

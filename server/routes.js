@@ -7,6 +7,16 @@ const { generateAIMissions } = require('./openai');
 function createRouter(io) {
   const router = express.Router();
 
+  // Helper function to check if DB is available
+  function isDBAvailable() {
+    try {
+      getDB();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
 router.get('/health', (_req, res) => res.json({ status: 'ok', timestamp: Date.now() }));
 
 router.post('/auth/wallet', async (req, res) => {
@@ -15,6 +25,13 @@ router.post('/auth/wallet', async (req, res) => {
 
   const valid = verifySignature(walletAddress, signature, nonce);
   if (!valid) return res.status(401).json({ error: 'invalid signature' });
+
+  if (!isDBAvailable()) {
+    // Mock user for testing without DB
+    const mockUser = { walletAddress, createdAt: new Date(), energy: 100, tokens: 0, level: 1, streak: 0 };
+    const token = generateToken(mockUser);
+    return res.json({ token, user: mockUser });
+  }
 
   const db = getDB();
   const user = await db.collection('users').findOneAndUpdate(
@@ -33,6 +50,13 @@ router.post('/game/claim-energy', async (req, res) => {
 
   const verified = verifySignature(walletAddress, signature, `${walletAddress}:${offlineSeconds}`);
   if (!verified) return res.status(401).json({ error: 'invalid signature' });
+
+  if (!isDBAvailable()) {
+    // Mock response for testing without DB
+    const reward = Math.min(offlineSeconds * 0.1, 1000);
+    const mockUser = { walletAddress, energy: 100 + reward, tokens: reward * 0.2 };
+    return res.json({ success: true, reward, user: mockUser });
+  }
 
   const db = getDB();
   const reward = Math.min(offlineSeconds * 0.1, 1000);
@@ -69,6 +93,16 @@ router.post('/nft/mint', async (req, res) => {
 });
 
 router.get('/leaderboard', async (_req, res) => {
+  if (!isDBAvailable()) {
+    // Mock leaderboard for testing without DB
+    const mockLeaderboard = [
+      { player: 'Miner1', score: 1500 },
+      { player: 'Miner2', score: 1200 },
+      { player: 'Miner3', score: 1000 }
+    ];
+    return res.json({ leaderboard: mockLeaderboard });
+  }
+
   const db = getDB();
   const list = await db.collection('leaderboard').find({}).sort({ score: -1 }).limit(50).toArray();
   res.json({ leaderboard: list });
@@ -155,12 +189,24 @@ router.get('/ai/missions', async (req, res) => {
   const { walletAddress } = req.query;
   if (!walletAddress) return res.status(400).json({ error: 'wallet required' });
 
-  const db = getDB();
-  const user = await db.collection('users').findOne({ walletAddress }) || { streak: 0, tokens: 0 };
+  let user = { streak: 0, tokens: 0 };
+  if (isDBAvailable()) {
+    const db = getDB();
+    user = await db.collection('users').findOne({ walletAddress }) || user;
+  }
 
-  const missions = await generateAIMissions(walletAddress, { streak: user.streak, tokens: user.tokens });
-
-  res.json({ missions, user, updatedAt: Date.now() });
+  try {
+    const missions = await generateAIMissions(walletAddress, { streak: user.streak, tokens: user.tokens });
+    res.json({ missions, user, updatedAt: Date.now() });
+  } catch (err) {
+    // Fallback mock missions if AI generation fails
+    const mockMissions = [
+      { id: 'tap-10', title: 'Tap Master', difficulty: 'Easy', reward: 25 },
+      { id: 'streak-5', title: 'Consistency King', difficulty: 'Medium', reward: 50 },
+      { id: 'energy-200', title: 'Energy Harvester', difficulty: 'Hard', reward: 100 }
+    ];
+    res.json({ missions: mockMissions, user, updatedAt: Date.now() });
+  }
 });
 
 router.post('/ai/report', async (req, res) => {
