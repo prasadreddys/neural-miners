@@ -22,26 +22,27 @@ const state = {
 };
 
 const elements = {
-  energyMeter: document.getElementById('energy-meter'),
-  tokenMeter: document.getElementById('token-meter'),
-  streakMeter: document.getElementById('streak-meter'),
-  tapButton: document.getElementById('tap-button'),
-  claimIdle: document.getElementById('claim-idle'),
-  showLeaderboard: document.getElementById('show-leaderboard'),
+  energyMeter: document.getElementById('energyValue'),
+  tokenMeter: document.getElementById('tokenValue'),
+  streakMeter: document.getElementById('streakValue'),
+  tapButton: document.getElementById('tapMineBtn'),
+  claimIdle: document.getElementById('offlineBtn'),
+  showLeaderboard: document.getElementById('leaderboardBtn'),
+  missionButton: document.getElementById('missionsBtn'),
   missionList: document.getElementById('mission-list'),
   assistantText: document.getElementById('assistant-text'),
   leaderboard: document.getElementById('leaderboard'),
   leaderboardList: document.getElementById('leaderboard-list'),
-  connectWallet: document.getElementById('connect-wallet'),
+  connectWallet: document.getElementById('connectBtn'),
   sendReferral: document.getElementById('send-referral'),
   openMarket: document.getElementById('open-market'),
   refreshMarket: document.getElementById('refresh-market'),
   marketList: document.getElementById('market-list'),
-  tokenBalance: document.getElementById('check-token-balance'),
+  tokenBalance: document.getElementById('balanceBtn'),
   tokenTransfer: document.getElementById('transfer-token'),
   stakeDeposit: document.getElementById('stake-deposit'),
   stakeWithdraw: document.getElementById('stake-withdraw'),
-  status: document.getElementById('connected-status'),
+  status: document.getElementById('connectionStatus'),
   transferAmount: null,
   recipientAddress: null
 };
@@ -164,35 +165,47 @@ async function connectWallet() {
   loadAIMissions();
 }
 
-elements.tapButton.addEventListener('click', () => {
-  const earned = 8 + Math.random() * 12;
-  state.energy += earned;
-  state.tokens += earned * 0.23;
-  state.streak += 1;
-  elements.assistantText.textContent = 'Neural tap success! Energy harvested.';
-  updateHUD();
+if (elements.tapButton) {
+  elements.tapButton.addEventListener('click', () => {
+    const earned = 8 + Math.random() * 12;
+    state.energy += earned;
+    state.tokens += earned * 0.23;
+    state.streak += 1;
+    elements.assistantText.textContent = 'Neural tap success! Energy harvested.';
+    updateHUD();
+  });
+}
+
+if (elements.claimIdle) elements.claimIdle.addEventListener('click', claimOffline);
+if (elements.showLeaderboard) elements.showLeaderboard.addEventListener('click', async () => {
+  await showTopLeaderboards();
+  const panel = document.getElementById('leaderboard');
+  if (panel) panel.style.display = 'block';
 });
-
-elements.claimIdle.addEventListener('click', claimOffline);
-
-elements.showLeaderboard.addEventListener('click', showTopLeaderboards);
-
-elements.connectWallet.addEventListener('click', connectWallet);
-
-elements.sendReferral.addEventListener('click', shareReferral);
-
-elements.openMarket.addEventListener('click', fetchMarketplace);
-
-elements.refreshMarket.addEventListener('click', fetchMarketplace);
-
-elements.tokenBalance.addEventListener('click', async () => {
-  const address = state.walletAddress || prompt('Enter wallet address for token balance:');
-  if (!address) return;
-  const res = await callAPI(`/token/balance?walletAddress=${encodeURIComponent(address)}`, null, 'GET');
-  if (res.balance !== undefined) {
-    elements.assistantText.textContent = `Token balance for ${address}: ${res.balance} NMT`;
-  }
+if (elements.missionButton) elements.missionButton.addEventListener('click', async () => {
+  await loadAIMissions();
+  const panel = document.getElementById('mission-panel');
+  if (panel) panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
 });
+if (elements.connectWallet) elements.connectWallet.addEventListener('click', connectWallet);
+if (elements.sendReferral) elements.sendReferral.addEventListener('click', shareReferral);
+if (elements.openMarket) elements.openMarket.addEventListener('click', async () => {
+  await fetchMarketplace();
+  const panel = document.getElementById('marketplace');
+  if (panel) panel.style.display = 'block';
+});
+if (elements.refreshMarket) elements.refreshMarket.addEventListener('click', fetchMarketplace);
+
+if (elements.tokenBalance) {
+  elements.tokenBalance.addEventListener('click', async () => {
+    const address = state.walletAddress || prompt('Enter wallet address for token balance:');
+    if (!address) return;
+    const res = await callAPI(`/token/balance?walletAddress=${encodeURIComponent(address)}`, null, 'GET');
+    if (res.balance !== undefined) {
+      elements.assistantText.textContent = `Token balance for ${address}: ${res.balance} NMT`;
+    }
+  });
+}
 
 elements.tokenTransfer.addEventListener('click', async () => {
   const to = prompt('Recipient wallet address:');
