@@ -15,6 +15,7 @@
   "author": "GitHub Copilot",
   "license": "MIT",
   "dependencies": {
+    "@vercel/analytics": "^1.0.0",
     "axios": "^1.5.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
