@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neural Miners</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <h1>Neural Miners</h1>
+      <div id="connected-status" class="tag">Disconnected</div>
+    </header>
+
+    <section class="hud">
+      <div class="meter" id="energy-meter">Energy: 0</div>
+      <div class="meter" id="token-meter">Tokens: 0</div>
+      <div class="meter" id="streak-meter">Streak: 0</div>
+    </section>
+
+    <section class="mining-grid">
+      <button id="tap-button" class="tap-btn">Tap + Mine</button>
+      <div class="message" id="action-message">Tap to start extracting digital energy.</div>
+    </section>
+
+    <section class="missions" id="missions">
+      <h2>AI Missions</h2>
+      <ul id="mission-list"></ul>
+    </section>
+
+    <section class="controls">
+      <button id="claim-idle">Claim Offline Energy</button>
+      <button id="show-leaderboard">Show Leaderboard</button>
+      <button id="connect-wallet">Connect Wallet</button>
+    </section>
+
+    <section class="leaderboard" id="leaderboard" hidden>
+      <h2>Leaderboard</h2>
+      <ul id="leaderboard-list"></ul>
+    </section>
+
+    <section class="ai-assistant">
+      <h2>AI Assistant</h2>
+      <p id="assistant-text">Ask for help or strategy tips.</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.2/dist/ethers.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
