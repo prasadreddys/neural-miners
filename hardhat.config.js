@@ -1,5 +1,5 @@
-require('@nomiclabs/hardhat-ethers');
-require('@nomiclabs/hardhat-etherscan');
+require('@nomicfoundation/hardhat-ethers');
+require('@nomicfoundation/hardhat-etherscan');
 require('dotenv').config();
 
 const INFURA_RPC = process.env.RPC_URL || 'https://polygon-rpc.com';
