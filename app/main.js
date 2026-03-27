@@ -76,12 +76,6 @@ async function callAPI(path, body = null, method = 'GET') {
     return null;
   }
 }
-  const options = { method, headers: { 'Content-Type': 'application/json' } };
-  if (body) options.body = JSON.stringify(body);
-  const res = await fetch(`${API_BASE}${path}`, options);
-  if (!res.ok) throw new Error(`API ${path} failed: ${res.status}`);
-  return res.json();
-}
 
 async function loadAIMissions() {
   try {
@@ -182,20 +176,43 @@ async function shareReferral() {
 
 async function connectWallet() {
   if (!globalThis.ethereum) {
-    alert('MetaMask not installed');
+    alert('MetaMask not installed or not accessible in this browser. Please install MetaMask and refresh.');
     return;
   }
-  const provider = new ethers.BrowserProvider(globalThis.ethereum);
-  const accounts = await provider.send('eth_requestAccounts', []);
-  state.walletAddress = accounts[0];
-  state.connected = true;
-  const nonce = Math.random().toString(36).substring(2, 10);
-  const signer = await provider.getSigner();
-  const signature = await signer.signMessage(`Neural Miner sign in: ${nonce}`);
-  await callAPI('/auth/wallet', { walletAddress: state.walletAddress, signature, nonce }, 'POST');
-  elements.assistantText.textContent = 'Wallet connected. AI assistant is online.';
-  updateHUD();
-  loadAIMissions();
+
+  try {
+    const provider = new ethers.BrowserProvider(globalThis.ethereum);
+    const accounts = await provider.send('eth_requestAccounts', []);
+
+    if (!accounts || accounts.length === 0) {
+      await setAssistantText('No Ethereum accounts available. Please connect MetaMask and retry.');
+      return;
+    }
+
+    state.walletAddress = accounts[0];
+
+    const nonce = Math.random().toString(36).substring(2, 10);
+    const signer = await provider.getSigner();
+    const signature = await signer.signMessage(`Neural Miner sign in: ${nonce}`);
+
+    const authResponse = await callAPI('/auth/wallet', { walletAddress: state.walletAddress, signature, nonce }, 'POST');
+
+    if (!authResponse || !authResponse.token) {
+      throw new Error('Wallet auth failed, no token returned.');
+    }
+
+    state.connected = true;
+    state.token = authResponse.token;
+
+    elements.assistantText.textContent = `Wallet connected: ${state.walletAddress.slice(0, 8)}...`;
+    updateHUD();
+    await loadAIMissions();
+    return authResponse;
+  } catch (err) {
+    console.error('Wallet connection failed:', err);
+    await setAssistantText(`Wallet connection failed: ${err.message || 'Unknown error'}`);
+    state.connected = false;
+  }
 }
 
 if (elements.tapButton) {
