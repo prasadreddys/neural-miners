@@ -28,17 +28,17 @@
       <div class="stat-card" id="streakCard"><span>Streak</span><strong id="streakValue">0</strong></div>
     </section>
 
-    <section class="panel mine-area">
+    <section class="panel mine-area anim-fade-in">
       <button id="tapMineBtn" class="primary-btn">Tap + Mine</button>
       <small>Tap to start extracting digital energy.</small>
     </section>
 
-    <section class="panel actions-grid">
-      <button class="secondary-btn" id="missionsBtn">AI Missions</button>
-      <button class="secondary-btn" id="offlineBtn">Claim Offline Energy</button>
-      <button class="secondary-btn" id="leaderboardBtn">Leaderboard</button>
-      <button class="secondary-btn" id="connectBtn">Connect Wallet</button>
-      <button class="secondary-btn" id="balanceBtn">Check $NMT Balance</button>
+    <section class="panel actions-grid anim-fade-in">
+      <button class="secondary-btn" id="missionsBtn" style="animation-delay: 0.2s;">AI Missions</button>
+      <button class="secondary-btn" id="offlineBtn" style="animation-delay: 0.3s;">Claim Offline Energy</button>
+      <button class="secondary-btn" id="leaderboardBtn" style="animation-delay: 0.4s;">Leaderboard</button>
+      <button class="secondary-btn" id="connectBtn" style="animation-delay: 0.5s;">Connect Wallet</button>
+      <button class="secondary-btn" id="balanceBtn" style="animation-delay: 0.6s;">Check $NMT Balance</button>
     </section>
 
     <section class="panel" style="margin-top:10px;">
@@ -63,6 +63,9 @@
     <footer class="tiny-footer">@NeuralMiner_bot</footer>
   </div>
 
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.2/dist/ethers.min.js" integrity="sha384-xYpY0B3aO1v0OfDShjcRti8kpW3qF9Gg9d7whpWZlbmJn9g1unF0jQQ7uV1D8MHS" crossorigin="anonymous"></script>
+  <script src="animation-system.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animation System Test</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg-layer"></div>
+  <canvas id="particles" aria-hidden="true"></canvas>
+
+  <div class="glass-shell">
+    <h1>Animation System Test</h1>
+
+    <div class="panel">
+      <h3>Utility Classes</h3>
+      <button class="secondary-btn anim-fade-in">Fade In</button>
+      <button class="secondary-btn anim-slide-up" style="animation-delay: 0.5s;">Slide Up</button>
+      <button class="secondary-btn anim-scale-in" style="animation-delay: 1s;">Scale In</button>
+      <button class="secondary-btn anim-bounce-in" style="animation-delay: 1.5s;">Bounce In</button>
+    </div>
+
+    <div class="panel">
+      <h3>Interactive Classes</h3>
+      <button class="secondary-btn hover-lift click-scale focus-glow">Hover & Click</button>
+      <button class="secondary-btn anim-glow-pulse">Glow Pulse</button>
+      <button class="secondary-btn anim-shimmer">Shimmer</button>
+    </div>
+
+    <div id="notification-container"></div>
+  </div>
+
+  <script src="animation-system.js"></script>
+  <script>
+    // Test notifications
+    setTimeout(() => {
+      window.animationSystem.createNotification('Welcome to Neural Miners!', 'info');
+    }, 1000);
+
+    setTimeout(() => {
+      window.animationSystem.createNotification('Animation system loaded!', 'success');
+    }, 3000);
+
+    // Test button interactions
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('secondary-btn')) {
+        window.animationSystem.showSuccess(e.target);
+      }
+    });
+  </script>
+</body>
+</html>

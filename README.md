@@ -24,17 +24,49 @@ Futuristic tap-to-earn + strategy game built as a Telegram Mini App with Web3 an
 4. `npm run bot`
 5. open `app/index.html` in browser or serve with static route
 
-## Deployment
-- Backend: Vercel/Heroku/Cloud Run
-- NFT contract: OpenZeppelin + Hardhat + Etherscan verification
-- Bot: Docker or serverless (Fly.io)
+## Animation Design System
 
-### Vercel Deployment
-1. Push code to GitHub repo
-2. Connect repo to Vercel
-3. Set environment variables in Vercel dashboard (from .env)
-4. Deploy
-5. Frontend served at root, API at /api/*
+The app features a comprehensive animation system for enhanced user experience:
 
-Bot runs separately (e.g., on Railway or local).
+### CSS Variables
+- `--anim-duration-*`: Fast (0.15s), normal (0.3s), slow (0.6s), slower (1.2s)
+- `--anim-easing-*`: Standard, decelerate, accelerate, bounce, elastic
+- `--anim-scale-*`: Hover (1.02), active (0.98)
+- `--anim-glow-*`: Glow intensities for interactive elements
+
+### Utility Classes
+- `.anim-fade-in`, `.anim-slide-up/down/left/right`
+- `.anim-scale-in`, `.anim-bounce-in`
+- `.anim-glow-pulse`, `.anim-shimmer`
+- `.anim-rotate`, `.anim-float`
+- `.hover-lift`, `.click-scale`, `.focus-glow`
+
+### JavaScript API
+```javascript
+// Initialize system (auto-initialized)
+const anim = window.animationSystem;
+
+// Animate elements
+anim.animate(element, 'fadeIn', { duration: '0.5s' });
+
+// Create sequences
+anim.animateSequence([
+  { element: btn1, animation: 'slideUp', delay: 100 },
+  { element: btn2, animation: 'slideUp', delay: 200 }
+]);
+
+// Show notifications
+anim.createNotification('Success!', 'success');
+
+// Enhance buttons
+anim.enhanceButton(myButton);
+```
+
+### Features
+- Particle background system
+- Entrance animations for panels
+- Interactive button feedback
+- Success/error notifications
+- Loading spinners
+- Staggered animation sequences
 

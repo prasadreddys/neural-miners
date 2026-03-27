@@ -33,6 +33,7 @@ const elements = {
   assistantText: document.getElementById('assistant-text'),
   leaderboard: document.getElementById('leaderboard'),
   leaderboardList: document.getElementById('leaderboard-list'),
+  actionMessage: document.getElementById('assistant-text'),
   connectWallet: document.getElementById('connectBtn'),
   sendReferral: document.getElementById('send-referral'),
   openMarket: document.getElementById('open-market'),
@@ -47,11 +48,21 @@ const elements = {
   recipientAddress: null
 };
 
-function updateHUD() {
+// Enhanced updateHUD with typing effect
+async function updateHUD() {
   elements.energyMeter.textContent = `Energy: ${Math.floor(state.energy)}`;
   elements.tokenMeter.textContent = `Tokens: ${Math.floor(state.tokens)}`;
   elements.streakMeter.textContent = `Streak: ${state.streak}`;
   elements.status.textContent = state.connected ? `Connected ${state.walletAddress || ''}` : 'Disconnected';
+}
+
+// Enhanced assistant text with typing effect
+async function setAssistantText(text) {
+  if (window.animationSystem) {
+    await window.animationSystem.typeText(elements.assistantText, text, 30);
+  } else {
+    elements.assistantText.textContent = text;
+  }
 }
 
 async function callAPI(path, body = null, method = 'GET') {
@@ -70,7 +81,7 @@ async function loadAIMissions() {
       .map((m) => `<li><strong>${m.title}</strong> <small>(${m.difficulty})</small> • +${m.reward} energy <button onclick='acceptMission("${m.id}")'>Accept</button></li>`)
       .join('');
   } catch (e) {
-    elements.assistantText.textContent = 'AI missions unavailable. Reconnecting...';
+    await setAssistantText('AI missions unavailable. Reconnecting...');
   }
 }
 
@@ -89,7 +100,13 @@ globalThis.acceptMission = async (missionId) => {
   if (spendEnergy(mission.reward / 3)) {
     state.tokens += mission.reward * 0.25;
     state.streak += 1;
-    elements.assistantText.textContent = `Mission '${mission.title}' complete. Reward granted.`;
+    await setAssistantText(`Mission '${mission.title}' complete. Reward granted.`);
+
+    // Add success animation
+    if (window.animationSystem) {
+      window.animationSystem.createNotification(`Mission Complete! +${(mission.reward * 0.25).toFixed(1)} Tokens`, 'success');
+    }
+
     await reportMissionProgress();
     updateHUD();
   }
@@ -166,12 +183,19 @@ async function connectWallet() {
 }
 
 if (elements.tapButton) {
-  elements.tapButton.addEventListener('click', () => {
+  elements.tapButton.addEventListener('click', async () => {
     const earned = 8 + Math.random() * 12;
     state.energy += earned;
     state.tokens += earned * 0.23;
     state.streak += 1;
-    elements.assistantText.textContent = 'Neural tap success! Energy harvested.';
+    await setAssistantText('Neural tap success! Energy harvested.');
+
+    // Add animation feedback
+    if (window.animationSystem) {
+      window.animationSystem.showSuccess(elements.tapButton);
+      window.animationSystem.createNotification(`+${earned.toFixed(1)} Energy!`, 'success');
+    }
+
     updateHUD();
   });
 }
@@ -250,10 +274,15 @@ elements.stakeWithdraw.addEventListener('click', async () => {
 setInterval(() => {
   state.energy = Math.max(0, state.energy - 0.04);
   if (state.energy < 20) {
-    elements.assistantText.textContent = 'Energy low. Tap more or accept missions.';
+    setAssistantText('Energy low. Tap more or accept missions.');
   }
   updateHUD();
 }, 2000);
 
 updateHUD();
 loadAIMissions();
+
+// Initialize with typing effect
+setTimeout(async () => {
+  await setAssistantText('Welcome, miner. Connect wallet or tap to begin.');
+}, 1000);
