@@ -3,64 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neural Miners</title>
+  <title>Neural Miner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="app-shell">
-    <header class="topbar">
-      <h1>Neural Miners</h1>
-      <div id="connected-status" class="tag">Disconnected</div>
+  <div class="bg-layer"></div>
+  <canvas id="particles" aria-hidden="true"></canvas>
+
+  <div class="glass-shell">
+    <header class="panel header">
+      <div>
+        <h1>Neural Miner</h1>
+        <p>AI-powered crypto metaverse</p>
+      </div>
+      <span id="connectionStatus" class="status disconnected">Disconnected</span>
     </header>
 
-    <section class="hud">
-      <div class="meter" id="energy-meter">Energy: 0</div>
-      <div class="meter" id="token-meter">Tokens: 0</div>
-      <div class="meter" id="streak-meter">Streak: 0</div>
+    <section class="panel metrics">
+      <div class="stat-card" id="energyCard"><span>Energy</span><strong id="energyValue">99</strong></div>
+      <div class="stat-card" id="tokenCard"><span>Tokens</span><strong id="tokenValue">0</strong></div>
+      <div class="stat-card" id="streakCard"><span>Streak</span><strong id="streakValue">0</strong></div>
     </section>
 
-    <section class="mining-grid">
-      <button id="tap-button" class="tap-btn">Tap + Mine</button>
-      <div class="message" id="action-message">Tap to start extracting digital energy.</div>
+    <section class="panel mine-area">
+      <button id="tapMineBtn" class="primary-btn">Tap + Mine</button>
+      <small>Tap to start extracting digital energy.</small>
     </section>
 
-    <section class="missions" id="missions">
-      <h2>AI Missions</h2>
-      <ul id="mission-list"></ul>
+    <section class="panel actions-grid">
+      <button class="secondary-btn" id="missionsBtn">AI Missions</button>
+      <button class="secondary-btn" id="offlineBtn">Claim Offline Energy</button>
+      <button class="secondary-btn" id="leaderboardBtn">Leaderboard</button>
+      <button class="secondary-btn" id="connectBtn">Connect Wallet</button>
+      <button class="secondary-btn" id="balanceBtn">Check $NMT Balance</button>
     </section>
 
-    <section class="controls">
-      <button id="claim-idle">Claim Offline Energy</button>
-      <button id="show-leaderboard">Show Leaderboard</button>
-      <button id="connect-wallet">Connect Wallet</button>
-      <button id="check-token-balance">Check $NMT Balance</button>
-      <button id="transfer-token">Send $NMT</button>
-      <button id="stake-deposit">Stake $NMT</button>
-      <button id="stake-withdraw">Withdraw Stake</button>
-      <button id="send-referral">Share Referral</button>
-      <button id="open-market">Open Marketplace</button>
-    </section>
+    <footer class="tiny-footer">@NeuralMiner_bot</footer>
+  </div>
 
-    <section class="marketplace" id="marketplace" hidden>
-      <h2>Marketplace</h2>
-      <ul id="market-list"></ul>
-      <button id="refresh-market">Refresh</button>
-    </section>
-
-    <section class="leaderboard" id="leaderboard" hidden>
-      <h2>Leaderboard</h2>
-      <ul id="leaderboard-list"></ul>
-    </section>
-
-    <section class="ai-assistant">
-      <h2>AI Assistant</h2>
-      <p id="assistant-text">Ask for help or strategy tips.</p>
-    </section>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.2/dist/ethers.min.js"></script>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@vercel/analytics@1.0.0/dist/index.min.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
