@@ -253,3 +253,122 @@ canvas#particles { position: fixed; inset: 0; z-index: 1; }
 }
 
 @media (max-width: 580px) { .glass-shell { width: 92vw; margin: 24px auto; } .metrics { grid-template-columns: 1fr; } }
+
+/* Cyberpunk Animation Effects */
+@keyframes sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes energyPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); box-shadow: 0 0 10px var(--neon-purple); }
+  50% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 20px var(--neon-purple), 0 0 30px var(--neon-cyan); }
+}
+
+@keyframes lightningFlicker {
+  0%, 100% { opacity: 0; transform: scaleY(0); }
+  10%, 90% { opacity: 1; transform: scaleY(1); }
+  20%, 80% { opacity: 0.8; transform: scaleY(0.9); }
+  30%, 70% { opacity: 1; transform: scaleY(1.1); }
+  40%, 60% { opacity: 0.9; transform: scaleY(0.95); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+
+@keyframes shieldScan {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+@keyframes shieldGlow {
+  0%, 100% { border-color: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+  50% { border-color: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); }
+}
+
+@keyframes scanLine {
+  0% { top: 0%; opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes textGlitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+@keyframes energyCorePulse {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--neon-cyan), inset 0 0 20px rgba(16, 248, 255, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--neon-cyan), 0 0 60px var(--neon-blue), inset 0 0 30px rgba(16, 248, 255, 0.5);
+    transform: scale(1.05);
+  }
+}
+
+/* Cyberpunk Particle Styles */
+.cyberpunk-particle {
+  will-change: transform, opacity;
+}
+
+.particle-dust {
+  filter: blur(0.5px);
+}
+
+.particle-spark {
+  transform-origin: center;
+}
+
+.particle-energy {
+  animation-timing-function: ease-in-out;
+}
+
+/* Holographic Shield */
+.holographic-shield {
+  will-change: background-position, box-shadow;
+  background-size: 200% 200%;
+}
+
+/* Glitch Text Effects */
+.glitch-text {
+  position: relative;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+.glitch-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.glitch-1 {
+  color: var(--neon-purple);
+  animation: textGlitch 0.3s ease-in-out;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+}
+
+.glitch-2 {
+  color: var(--neon-blue);
+  animation: textGlitch 0.3s ease-in-out 0.1s;
+  clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+}
+
+/* Energy Core Effect */
+.energy-core {
+  position: relative;
+  background: linear-gradient(45deg, var(--neon-cyan), var(--neon-blue), var(--neon-purple));
+  background-size: 200% 200%;
+  animation: energyCorePulse 2s ease-in-out infinite;
+}
+
+/* Lightning Arc */
+.lightning-arc {
+  will-change: opacity, transform;
+  transform-origin: center;
+}

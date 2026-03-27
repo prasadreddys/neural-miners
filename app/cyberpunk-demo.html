@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural Miner - Cyberpunk Animation Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="bg-layer"></div>
+  <canvas id="particles"></canvas>
+
+  <div class="glass-shell">
+    <header>
+      <h1 id="title">NEURAL MINER</h1>
+      <div id="assistant-text">Cyberpunk animation system initialized...</div>
+    </header>
+
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-label">Energy Core</div>
+        <div class="metric-value" id="energyValue">100</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Neural Tokens</div>
+        <div class="metric-value" id="tokenValue">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Mining Streak</div>
+        <div class="metric-value" id="streakValue">0</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="tapMineBtn" class="cta-button">⚡ TAP TO MINE</button>
+      <button id="missionsBtn" class="secondary-button">🤖 AI Missions</button>
+      <button id="leaderboardBtn" class="secondary-button">🏆 Leaderboard</button>
+    </div>
+
+    <div id="mission-panel" class="panel" style="display: none;">
+      <h3>AI Missions</h3>
+      <ul id="mission-list"></ul>
+    </div>
+
+    <div id="leaderboard" class="panel" style="display: none;">
+      <h3>Neural Leaderboard</h3>
+      <ul id="leaderboard-list"></ul>
+    </div>
+  </div>
+
+  <script src="animation-system.js"></script>
+  <script>
+    // Initialize animation system
+    window.animationSystem = new AnimationSystem();
+
+    // Demo cyberpunk effects
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize cyberpunk theme
+      window.animationSystem.initCyberpunkTheme();
+
+      // Add click effects to demo button
+      const tapBtn = document.getElementById('tapMineBtn');
+      tapBtn.addEventListener('click', () => {
+        window.animationSystem.showSuccess(tapBtn);
+        window.animationSystem.createNotification('Neural energy harvested!', 'success');
+
+        // Trigger lightning effect occasionally
+        if (Math.random() < 0.3) {
+          setTimeout(() => {
+            window.animationSystem.createLightningArc(document.body);
+          }, 500);
+        }
+      });
+
+      // Add typing effect to assistant text
+      const assistantText = document.getElementById('assistant-text');
+      const messages = [
+        'Initializing neural interface...',
+        'Connecting to blockchain matrix...',
+        'AI core online. Ready to mine.',
+        'Welcome to the cyberpunk metaverse.'
+      ];
+
+      let messageIndex = 0;
+      setInterval(() => {
+        window.animationSystem.setTypingText(assistantText, messages[messageIndex]);
+        messageIndex = (messageIndex + 1) % messages.length;
+      }, 4000);
+    });
+  </script>
+</body>
+</html>

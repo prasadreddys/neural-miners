@@ -256,27 +256,193 @@ class AnimationSystem {
   }
 
   /**
-   * Create floating particles effect
+   * Create enhanced particle system with cyberpunk effects
    * @param {HTMLElement} container - Container for particles
    * @param {number} count - Number of particles
    */
-  createFloatingParticles(container, count = 10) {
+  createCyberpunkParticles(container, count = 30) {
+    // Clear existing particles
+    container.querySelectorAll('.cyberpunk-particle').forEach(p => p.remove());
+
     for (let i = 0; i < count; i++) {
       const particle = document.createElement('div');
-      particle.className = 'floating-particle';
+      particle.className = 'cyberpunk-particle';
+
+      // Random particle types: dust, spark, energy
+      const types = ['dust', 'spark', 'energy'];
+      const type = types[Math.floor(Math.random() * types.length)];
+
+      particle.classList.add(`particle-${type}`);
       particle.style.cssText = `
         position: absolute;
-        width: 4px;
-        height: 4px;
-        background: var(--neon-cyan);
-        border-radius: 50%;
+        pointer-events: none;
+        animation: ${type === 'dust' ? 'float' : type === 'spark' ? 'sparkle' : 'energyPulse'} ${2 + Math.random() * 4}s ease-in-out infinite;
+        animation-delay: ${Math.random() * 3}s;
         left: ${Math.random() * 100}%;
         top: ${Math.random() * 100}%;
-        animation: float ${2 + Math.random() * 2}s ease-in-out infinite;
-        animation-delay: ${Math.random() * 2}s;
-        opacity: ${0.3 + Math.random() * 0.4};
+        opacity: ${0.1 + Math.random() * 0.4};
       `;
+
+      // Add specific styling based on type
+      if (type === 'dust') {
+        particle.style.width = '2px';
+        particle.style.height = '2px';
+        particle.style.background = `radial-gradient(circle, var(--neon-cyan) 0%, transparent 70%)`;
+        particle.style.borderRadius = '50%';
+      } else if (type === 'spark') {
+        particle.style.width = '1px';
+        particle.style.height = '8px';
+        particle.style.background = `linear-gradient(to bottom, transparent, var(--neon-blue), transparent)`;
+        particle.style.transform = `rotate(${Math.random() * 360}deg)`;
+      } else if (type === 'energy') {
+        particle.style.width = '3px';
+        particle.style.height = '3px';
+        particle.style.background = `var(--neon-purple)`;
+        particle.style.borderRadius = '50%';
+        particle.style.boxShadow = `0 0 4px var(--neon-purple)`;
+      }
+
       container.appendChild(particle);
+    }
+  }
+
+  /**
+   * Create lightning arc effect
+   * @param {HTMLElement} container - Container for lightning
+   */
+  createLightningArc(container) {
+    const lightning = document.createElement('div');
+    lightning.className = 'lightning-arc';
+    lightning.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2px;
+      height: 100px;
+      background: linear-gradient(to bottom, transparent, var(--neon-cyan), transparent);
+      transform-origin: center;
+      animation: lightningFlicker 0.1s ease-in-out;
+      opacity: 0;
+      pointer-events: none;
+    `;
+
+    container.appendChild(lightning);
+
+    // Trigger lightning randomly
+    setTimeout(() => {
+      lightning.style.opacity = '1';
+      setTimeout(() => {
+        lightning.style.opacity = '0';
+        setTimeout(() => lightning.remove(), 1000);
+      }, 100);
+    }, Math.random() * 5000 + 2000);
+  }
+
+  /**
+   * Create holographic shield effect
+   * @param {HTMLElement} element - Element to add shield to
+   */
+  addHolographicShield(element) {
+    const shield = document.createElement('div');
+    shield.className = 'holographic-shield';
+    shield.style.cssText = `
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 2px solid var(--neon-cyan);
+      border-radius: 50%;
+      background: linear-gradient(45deg, transparent, rgba(16, 248, 255, 0.1), transparent);
+      animation: shieldScan 3s linear infinite, shieldGlow 2s ease-in-out infinite;
+      pointer-events: none;
+    `;
+
+    element.style.position = 'relative';
+    element.appendChild(shield);
+
+    // Add scan line effect
+    const scanLine = document.createElement('div');
+    scanLine.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+      animation: scanLine 3s linear infinite;
+    `;
+    shield.appendChild(scanLine);
+  }
+
+  /**
+   * Create glitch text effect for titles
+   * @param {HTMLElement} element - Text element to glitch
+   */
+  createGlitchText(element) {
+    element.classList.add('glitch-text');
+    element.style.cssText += `
+      position: relative;
+      animation: textGlitch 0.3s ease-in-out;
+    `;
+
+    // Create glitch overlay
+    const glitch1 = element.cloneNode(true);
+    const glitch2 = element.cloneNode(true);
+
+    glitch1.className = 'glitch-overlay glitch-1';
+    glitch2.className = 'glitch-overlay glitch-2';
+
+    element.parentNode.appendChild(glitch1);
+    element.parentNode.appendChild(glitch2);
+
+    // Remove glitch after animation
+    setTimeout(() => {
+      glitch1.remove();
+      glitch2.remove();
+    }, 300);
+  }
+
+  /**
+   * Create energy core pulsing effect
+   * @param {HTMLElement} element - Element to add pulsing to
+   */
+  addEnergyCorePulse(element) {
+    element.classList.add('energy-core');
+    element.style.cssText += `
+      animation: energyCorePulse 2s ease-in-out infinite;
+    `;
+  }
+
+  /**
+   * Initialize cyberpunk theme animations
+   */
+  initCyberpunkTheme() {
+    // Enhanced particle system
+    const canvas = document.getElementById('particles');
+    if (canvas) {
+      this.createCyberpunkParticles(canvas.parentNode, 40);
+    }
+
+    // Add lightning effects randomly
+    setInterval(() => {
+      if (Math.random() < 0.3) { // 30% chance every 5 seconds
+        const container = document.querySelector('.glass-shell') || document.body;
+        this.createLightningArc(container);
+      }
+    }, 5000);
+
+    // Add holographic shield to main button
+    const mainButton = document.getElementById('tapMineBtn');
+    if (mainButton) {
+      this.addHolographicShield(mainButton);
+      this.addEnergyCorePulse(mainButton);
+    }
+
+    // Add glitch effect to title
+    const title = document.querySelector('h1');
+    if (title) {
+      setTimeout(() => this.createGlitchText(title), 1000);
     }
   }
 }

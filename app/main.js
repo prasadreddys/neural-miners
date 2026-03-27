@@ -234,3 +234,8 @@ loadAIMissions();
 setTimeout(async () => {
   await setAssistantText('Welcome, miner. Connect wallet or tap to begin.');
 }, 1000);
+
+// Initialize Cyberpunk Theme Animations
+if (window.animationSystem) {
+  window.animationSystem.initCyberpunkTheme();
+}
